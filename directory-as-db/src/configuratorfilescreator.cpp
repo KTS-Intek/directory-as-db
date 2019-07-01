@@ -19,7 +19,7 @@ void ConfiguratorFilesCreator::saveThisData2database(qint64 msec, quint8 meterTy
 
     QString mess;
     if(!save2file(msec, pollCode, meterType, idstr, QJsonDocument(j).toJson(QJsonDocument::Compact), mess )){
-        emit append2applog(tr("Can't save to the file '%1', error '%2'").arg(idstr).arg(mess));
+        emit append2applog(tr("Can't save data to the file '%1', error '%2'").arg(idstr).arg(mess));
     }
 
     if(!mess.isEmpty())
