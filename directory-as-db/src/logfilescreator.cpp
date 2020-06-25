@@ -18,6 +18,7 @@ QString LogFilesCreator::getPath2syncDir() const
 
 bool LogFilesCreator::save2file(const qint64 &msec, const quint8 &pollcode, const quint8 &devtype, const QString &devid, const QByteArray &jsonline, QString &errstr)
 {
+
     if(path2syncdir.isEmpty()){
         errstr = tr("The sync directory path is not set");
         return false;
@@ -25,7 +26,7 @@ bool LogFilesCreator::save2file(const qint64 &msec, const quint8 &pollcode, cons
 
     const QString path2dir = getFullPath2dir(msec);
     if(path2dir.isEmpty()){
-        errstr = tr("Can't write in the sync directory");
+        errstr = tr("It is impossible to write to the sync directory");
         return false;
     }
 
@@ -33,6 +34,8 @@ bool LogFilesCreator::save2file(const qint64 &msec, const quint8 &pollcode, cons
 
     return CompressFileHelper::writeArr2file(jsonline, filename, 11, errstr);
 }
+
+
 
 bool LogFilesCreator::makeDirPath(const QString &path2dir)
 {
@@ -54,5 +57,6 @@ QString LogFilesCreator::getFullPath2dir(const qint64 &msec)
 void LogFilesCreator::setNewSyncDir(QString path)
 {
     path2syncdir = path;
+    emit onSyncPathReceived();
 }
 

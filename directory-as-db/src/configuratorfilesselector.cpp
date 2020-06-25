@@ -12,6 +12,7 @@
 ConfiguratorFilesSelector::ConfiguratorFilesSelector(QObject *parent) : QObject(parent)
 {
     stopAll = false;
+    useDefaultMethod2processJSON = true;
 }
 
 void ConfiguratorFilesSelector::setSelectData(QVariant v, QString datemask)
@@ -25,13 +26,39 @@ void ConfiguratorFilesSelector::createDataProcessingObject()
     qDebug() << " ConfiguratorFilesSelector::createDataProcessingObject() ";
 }
 
+bool ConfiguratorFilesSelector::processThisJSON(const QJsonObject &j)
+{
+    return defaultMethod2processJSON(j, "?");
+}
+
+bool ConfiguratorFilesSelector::defaultMethod2processJSON(const QJsonObject &j, const QString &devid)
+{
+    if(j.isEmpty())
+        return false;
+
+    const QStringList lk = j.keys();
+    QHash<QString,QString> oneitem;
+
+    for(int i = 0, imax = lk.size(); i < imax; i++)
+        oneitem.insert(lk.at(i), j.value(lk.at(i)).toString());
+
+    MyListHashString data;
+    data.append(oneitem);
+    emit appendMeterData(devid, "", data);
+    return false;
+
+}
+
 void ConfiguratorFilesSelector::startSelection()
 {
 
     createDataProcessingObject();
 
+    emit searchStarted();
     if(selectData() < 1)
         emit appendMeterData("", "", MyListHashString());
+    emit searchFinished();
+
     deleteLater();
 }
 
@@ -123,22 +150,13 @@ qint64 ConfiguratorFilesSelector::selectData()
                 const QByteArray arr = file.read(MAX_PACKET_LEN);
                 file.close();
 
-                const QJsonObject j = QJsonDocument::fromJson(arr).object();
-                if(j.isEmpty())
-                    continue;
+
+                if( (useDefaultMethod2processJSON && defaultMethod2processJSON(QJsonDocument::fromJson(arr).object(), devid))
+                        || (!useDefaultMethod2processJSON && processThisJSON(QJsonDocument::fromJson(arr).object())) )
+                    counter++;
 
 
-                const QStringList lk = j.keys();
-                QHash<QString,QString> oneitem;
 
-                for(int i = 0, imax = lk.size(); i < imax; i++)
-                    oneitem.insert(lk.at(i), j.value(lk.at(i)).toString());
-
-
-                MyListHashString data;
-                data.append(oneitem);
-                emit appendMeterData(devid, "", data);
-                counter++;
             }
 
 

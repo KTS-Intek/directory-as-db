@@ -13,6 +13,7 @@ public:
 
     bool save2file(const qint64 &msec, const quint8 &pollcode, const quint8 &devtype, const QString &devid, const QByteArray &jsonline, QString &errstr);
 
+
     bool makeDirPath(const QString &path2dir);
 
     QString getFullPath2dir(const qint64 &msec);
@@ -20,6 +21,7 @@ public:
 signals:
     void giveMeAsyncDir();
 
+    void onSyncPathReceived();
 
 public slots:
 

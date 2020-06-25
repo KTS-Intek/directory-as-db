@@ -16,10 +16,16 @@ public:
     bool stopAll;
     QString dateMask;
 
+    bool useDefaultMethod2processJSON;
+
     void setSelectData(QVariant v, QString datemask);
 
 
     virtual void createDataProcessingObject();//to a child
+
+    virtual bool processThisJSON(const QJsonObject &j);
+
+    bool defaultMethod2processJSON(const QJsonObject &j, const QString &devid);
 
 
 signals:
@@ -27,6 +33,10 @@ signals:
 
     void appendMeterData(QString ni, QString sn, MyListHashString data);
 
+
+    void searchStarted();
+
+    void searchFinished();
 
 
 //    void giveMeAsyncDir();
